@@ -30,7 +30,7 @@ function getMarkdownFiles(dir, prefix = '') {
 
         if (stat.isDirectory()) {
             const relativeDirPath = path.relative(scriptDirectory, filePath) + '/';
-            const emoji = getRandomEmoji();
+            const emoji = '📂';
             content += `${prefix}- [${emoji} ${file}](${relativeDirPath.replace(/\\/g, '/')})\n`;
             content += getMarkdownFiles(filePath, `${prefix}  `);
         } else if (file.endsWith('.md')) {
