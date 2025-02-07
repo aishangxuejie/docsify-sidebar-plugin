@@ -45,20 +45,18 @@ function getMarkdownFiles(dir, prefix = '') {
 }
 
 function checkAndCreateReadme(dir) {
-    let files = fs.readdirSync(dir).filter(file => !filterFiles.includes(file));
+    let files = fs.readdirSync(dir);
     let readmeExists = files.some(file => file.toLowerCase() === 'readme.md');
-
     if (!readmeExists) {
         const readmePath = path.join(dir, 'README.md');
         const readmeContent = '# Welcome! docsify-sidebar-plugin\n\n This is an auto-created README.md\n\n';
         fs.writeFileSync(readmePath, readmeContent);
         console.log(`》》README.md Write succeeded: ${dir}`);
     }
-
+    files = files.filter(file => !filterFiles.includes(file));
     files.forEach(file => {
         const filePath = path.join(dir, file);
         const stat = fs.statSync(filePath);
-
         if (stat.isDirectory()) {
             checkAndCreateReadme(filePath);
         }
