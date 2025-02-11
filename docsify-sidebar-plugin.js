@@ -2,7 +2,7 @@
  * @copyright 2025
  * @name docsify-sidebar-plugin
  * @link https://github.com/aishangxuejie/docsify-sidebar-plugin
- * @version 1.3.0
+ * @version 1.3.2
  * @license MIT
  */
 
@@ -22,19 +22,19 @@ const sidebarPath = path.join(directoryPath, '_sidebar.md');
 console.log('》》_sidebar.md path:', sidebarPath);
 
 const configPath = path.join(scriptDirectory, 'sidebar.config.json');
-let config = {};
+let config = {
+    ignoreFiles: ['readme.md', 'README.md', 'cover.md', '_sidebar.md', 'assets'],
+    emojis: ['🍎', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑', '🍍', '🥭', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦', '🥒', '🌽'],
+    directoryEmoji: '📂',
+    readmeContent: '# Hi! \n\n This is an auto-created README.md by docsify-sidebar-plugin\n'
+};
 
 if (fs.existsSync(configPath)) {
-    config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
-} else {
-    console.error('》》Configuration file sidebar.config.json not found');
-    process.exit(1);
+    const userConfig = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+    config = { ...config, ...userConfig };
 }
 
-const ignoreFiles = config.ignoreFiles || ['readme.md', 'README.md', 'cover.md', '_sidebar.md', 'assets'];
-const emojis = config.emojis || ['🍎', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑', '🍍', '🥭', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦', '🥒', '🌽'];
-const directoryEmoji = config.directoryEmoji || '📂';
-const readmeContent = config.readmeContent || '# Hi! \n\n This is an auto-created README.md by docsify-sidebar-plugin\n';
+const { ignoreFiles, emojis, directoryEmoji, readmeContent } = config;
 
 function getRandomEmoji() {
     return emojis[Math.floor(Math.random() * emojis.length)];
