@@ -1,3 +1,9 @@
+/**
+ * docsify-sidebar-plugin
+ * GitHub: https://github.com/aishangxuejie/docsify-sidebar-plugin
+ * Version: 1.3.0
+ */
+
 const fs = require('fs');
 const path = require('path');
 
