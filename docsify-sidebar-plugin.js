@@ -1,7 +1,9 @@
 /**
- * docsify-sidebar-plugin
- * GitHub: https://github.com/aishangxuejie/docsify-sidebar-plugin
- * Version: 1.3.0
+ * @copyright 2025
+ * @name docsify-sidebar-plugin
+ * @link https://github.com/aishangxuejie/docsify-sidebar-plugin
+ * @version 1.3.0
+ * @license MIT
  */
 
 const fs = require('fs');
