@@ -1,0 +1,6 @@
+{
+    "ignoreFiles": ["readme.md", "README.md", "cover.md", "_sidebar.md", "assets"],
+    "emojis": ["🍎", "🍊", "🍋", "🍌", "🍉", "🍇", "🍓", "🍈", "🍒", "🍑", "🍍", "🥭", "🥥", "🥝", "🍅", "🍆", "🥑", "🥦", "🥒", "🌽"],
+    "directoryEmoji": "📂",
+    "readmeContent": "# Hi! \n\n This is an auto-created README.md by docsify-sidebar-plugin\n"
+}

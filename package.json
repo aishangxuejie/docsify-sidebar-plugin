@@ -1,0 +1,8 @@
+{
+    "name": "docsify-sidebar-plugin-project",
+    "version": "1.0.0",
+    "scripts": {
+        "gen": "node docsify-sidebar-plugin.min.js",
+        "start": "docsify serve ../docs"
+    }
+}

@@ -13,15 +13,27 @@ const directoryPath = path.join(scriptDirectory, relativePath);
 const sidebarPath = path.join(directoryPath, '_sidebar.md');
 console.log('》》_sidebar.md path:', sidebarPath);
 
-const filterFiles = ['readme.md', 'README.md', 'cover.md', '_sidebar.md', 'assets'];
-const emojis = ['🍎', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑', '🍍', '🥭', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦', '🥒', '🌽'];
+const configPath = path.join(scriptDirectory, 'sidebar.config.json');
+let config = {};
+
+if (fs.existsSync(configPath)) {
+    config = JSON.parse(fs.readFileSync(configPath, 'utf-8'));
+} else {
+    console.error('》》Configuration file sidebar.config.json not found');
+    process.exit(1);
+}
+
+const ignoreFiles = config.ignoreFiles || ['readme.md', 'README.md', 'cover.md', '_sidebar.md', 'assets'];
+const emojis = config.emojis || ['🍎', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑', '🍍', '🥭', '🥥', '🥝', '🍅', '🍆', '🥑', '🥦', '🥒', '🌽'];
+const directoryEmoji = config.directoryEmoji || '📂';
+const readmeContent = config.readmeContent || '# Hi! \n\n This is an auto-created README.md by docsify-sidebar-plugin\n';
 
 function getRandomEmoji() {
     return emojis[Math.floor(Math.random() * emojis.length)];
 }
 
 function getMarkdownFiles(dir, prefix = '') {
-    let files = fs.readdirSync(dir).filter(file => !filterFiles.includes(file));
+    let files = fs.readdirSync(dir).filter(file => !ignoreFiles.includes(file));
     let content = '';
 
     files.forEach(file => {
@@ -30,8 +42,7 @@ function getMarkdownFiles(dir, prefix = '') {
 
         if (stat.isDirectory()) {
             const relativeDirPath = path.relative(scriptDirectory, filePath) + '/';
-            const emoji = '📂';
-            content += `${prefix}- [${emoji} ${file}](${relativeDirPath.replace(/\\/g, '/')})\n`;
+            content += `${prefix}- [${directoryEmoji} ${file}](${relativeDirPath.replace(/\\/g, '/')})\n`;
             content += getMarkdownFiles(filePath, `${prefix}  `);
         } else if (file.endsWith('.md')) {
             const relativeFilePath = path.relative(scriptDirectory, filePath);
@@ -49,11 +60,10 @@ function checkAndCreateReadme(dir) {
     let readmeExists = files.some(file => file.toLowerCase() === 'readme.md');
     if (!readmeExists) {
         const readmePath = path.join(dir, 'README.md');
-        const readmeContent = '# Welcome! docsify-sidebar-plugin\n\n This is an auto-created README.md\n\n';
         fs.writeFileSync(readmePath, readmeContent);
         console.log(`》》README.md Write succeeded: ${dir}`);
     }
-    files = files.filter(file => !filterFiles.includes(file));
+    files = files.filter(file => !ignoreFiles.includes(file));
     files.forEach(file => {
         const filePath = path.join(dir, file);
         const stat = fs.statSync(filePath);
@@ -67,11 +77,11 @@ function getCurrentTimestamp() {
     return new Date().toISOString();
 }
 
-async function main() {
+async function updateSidebar() {
     try {
-        checkAndCreateReadme(directoryPath);
+        checkAndCreateReadme(directoryPath, ignoreFiles);
 
-        let newContent = getMarkdownFiles(directoryPath);
+        let newContent = getMarkdownFiles(directoryPath, '', ignoreFiles);
 
         if (fs.existsSync(sidebarPath)) {
             const existingContent = fs.readFileSync(sidebarPath, 'utf-8');
@@ -83,7 +93,7 @@ async function main() {
             newContent = newLines.join('\n');
 
             if (newContent) {
-                newContent = `\n<!-- update on ${getCurrentTimestamp()} -->\n` + newContent;
+                newContent = newContent + `<!-- update on ${getCurrentTimestamp()} -->\n`;
                 fs.appendFile(sidebarPath, newContent, err => {
                     if (err) {
                         console.error('》》_sidebar.md Append failed: ' + err);
@@ -95,7 +105,7 @@ async function main() {
                 console.log('》》_sidebar.md No new directories to append');
             }
         } else {
-            newContent = `<!-- ./_sidebar.md -->\n\n<!-- Welcome! docsify-sidebar-plugin generated in ${getCurrentTimestamp()} -->\n\n` + newContent;
+            newContent = `<!-- ./_sidebar.md, docsify-sidebar-plugin generated in ${getCurrentTimestamp()} -->\n\n` + newContent;
             fs.writeFile(sidebarPath, newContent, err => {
                 if (err) {
                     console.error('》》_sidebar.md Unable to write: ' + err);
@@ -107,6 +117,10 @@ async function main() {
     } catch (error) {
         console.error('》》An error occurred: ', error);
     }
+}
+
+async function main() {
+    await updateSidebar();
 }
 
 main();
